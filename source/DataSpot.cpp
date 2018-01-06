@@ -21,7 +21,7 @@ dst::DataSpot::~DataSpot()
 	// Delete configuration statement
 	sqlite3_finalize(mGetConfigStmt);
 
-	printf("Closing the database");
+	printf("Closing the database\n");
 
 	int closeResult = sqlite3_close(mDb);
 
@@ -32,9 +32,10 @@ dst::DataSpot::~DataSpot()
 }
 
 
+/// Opens a SQLite database, or create if it does not exist
 void dst::DataSpot::Open(const std::string& path)
 {
-	printf("Opening a database at %s", path.c_str());
+	printf("Opening a database at %s\n", path.c_str());
 
 	int openResult = sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE, nullptr);
 
@@ -47,48 +48,59 @@ void dst::DataSpot::Open(const std::string& path)
 }
 
 
+/// Returns a prepared statement
+sqlite3_stmt* dst::DataSpot::Prepare(const std::string& query)
+{
+	sqlite3_stmt* statement{ nullptr };
+
+	int prepareResult{ sqlite3_prepare_v2(mDb, query.c_str(), -1, &statement, nullptr) };
+
+	if (prepareResult != SQLITE_OK)
+	{
+		throw DataSpotException{ sqlite3_errmsg(mDb), prepareResult };
+	}
+
+	return statement;
+}
+
+
 std::string dst::DataSpot::GetConfigValue(const std::string& key)
 {
 	// Prepare the statement once
 	if (mGetConfigStmt == nullptr)
 	{
-		printf("Preparing configuration statement");
-		int prepareResult = sqlite3_prepare_v2(
-			mDb,
-			"SELECT value FROM main.config WHERE key = ?;",
-			-1, // Read the statement up to the first zero terminator
-			&mGetConfigStmt,
-			nullptr);
+		printf("Preparing configuration statement\n");
+		mGetConfigStmt = Prepare("SELECT value FROM main.config WHERE key = ?;");
 	}
 
 	std::string value; // To return
 
 	// Bind the key
-	int bind_result = sqlite3_bind_text(
+	int bind_result{ sqlite3_bind_text(
 		mGetConfigStmt,
 		1, // First parameter: key
 		key.c_str(),
 		-1,
-		SQLITE_TRANSIENT);
+		SQLITE_TRANSIENT) };
 
 	// Check bind result
 	if (bind_result != SQLITE_OK)
 	{
-		printf("Could not bind key: %s", sqlite3_errmsg(mDb));
+		throw DataSpotException{ "Could not bind", bind_result };
 	}
 	else // Step!
 	{
-		int step_result = sqlite3_step(mGetConfigStmt);
+		int step_result{ sqlite3_step(mGetConfigStmt) };
 		// Check step result
 		if (step_result != SQLITE_ROW)
 		{
-			printf("Could not step select: %s", sqlite3_errmsg(mDb));
+			throw DataSpotException{ "Could not step", step_result };
 		}
 		else // Get the value. Woho!
 		{
-			const unsigned char *cValue = sqlite3_column_text(mGetConfigStmt, 0);
+			const unsigned char* cValue{ sqlite3_column_text(mGetConfigStmt, 0) };
 			value = std::string(reinterpret_cast<const char*>(cValue));
-			printf("Found config value [%s] for key[%s]", value.c_str(), key.c_str());
+			printf("Found config value [%s] for key[%s]\n", value.c_str(), key.c_str());
 		}
 	}
 
@@ -121,12 +133,19 @@ void dst::DataSpot::create(const char* path)
 
 void dst::DataSpot::createConfigTable()
 {
+	CreateTable("CREATE TABLE main.config(key TEXT PRIMARY KEY ASC, value TEXT);");
+}
+
+
+/// Creates a table
+void dst::DataSpot::CreateTable(const std::string& query)
+{
 	printf("Creating a config table");
 	sqlite3_stmt* createTableStmt;
 
 	int prepareResult = sqlite3_prepare_v2(
 		mDb,
-		"CREATE TABLE main.config(key TEXT PRIMARY KEY ASC, value TEXT);",
+		query.c_str(),
 		-1, // Read the statement up to the first zero terminator
 		&createTableStmt,
 		nullptr);
@@ -134,7 +153,7 @@ void dst::DataSpot::createConfigTable()
 	// If could not prepare the statement, log the error code
 	if (prepareResult != SQLITE_OK)
 	{
-		printf("Could not prepare a statement. [error %d]", prepareResult);
+		throw DataSpotException{ "Could not prepare a statement", prepareResult };
 	}
 	else // Step the prepared statement
 	{
@@ -143,7 +162,7 @@ void dst::DataSpot::createConfigTable()
 		// If could not create the table, log the error code
 		if (stepResult != SQLITE_DONE)
 		{
-			printf("Could not step a statement. [error %d]", stepResult);
+			throw DataSpotException{ "Could not step a statement", stepResult };
 		}
 
 		// Populate config table with some entries
