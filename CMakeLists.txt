@@ -18,6 +18,7 @@ include_directories(${DST_INCLUDE_DIR})
 set(DST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/source)
 set(SOURCES
 	${DST_SOURCE_DIR}/DataSpot.cpp
+	${DST_SOURCE_DIR}/Statement.cpp
 	${DST_SOURCE_DIR}/sqlite3.c)
 source_group(Sources FILES ${SOURCES})
 

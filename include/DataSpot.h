@@ -1,36 +1,18 @@
 #ifndef DST_DATASPOT_H_
 #define DST_DATASPOT_H_
 
+#include "Statement.h"
+
 #include <string>
 #include <stdexcept>
+
+
 
 struct sqlite3;
 struct sqlite3_stmt;
 
 namespace dataspot
 {
-
-
-class DataSpotException : public std::runtime_error
-{
-public:
-	DataSpotException(const char* msg, int error)
-	:	std::runtime_error(msg)
-	,	mError{ error }
-	{}
-
-	/// Returns the SQLite error code
-	int GetError() const { return mError; }
-
-	/// Returns a string representation
-	std::string ToString() const
-	{
-		return std::string{ what() };
-	}
-
-private:
-	int mError;
-};
 
 
 class DataSpot
@@ -56,7 +38,7 @@ private:
 	void populateConfigTable();
 
 	sqlite3* mDb;
-	sqlite3_stmt* mGetConfigStmt;
+	Statement mGetConfigStmt;
 };
 
 

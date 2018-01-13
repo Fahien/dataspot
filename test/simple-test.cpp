@@ -1,4 +1,5 @@
 #include "DataSpot.h"
+#include "DataSpotException.h"
 
 #include <iostream>
 #include <cassert>

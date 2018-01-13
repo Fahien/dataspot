@@ -1,4 +1,5 @@
 #include "DataSpot.h"
+#include "DataSpotException.h"
 #include "sqlite3.h"
 
 #include <iostream>
@@ -12,15 +13,12 @@ namespace dst = dataspot;
 
 dst::DataSpot::DataSpot()
 :	mDb           { nullptr }
-,	mGetConfigStmt{ nullptr }
+,	mGetConfigStmt{}
 {}
 
 
 dst::DataSpot::~DataSpot()
 {
-	// Delete configuration statement
-	sqlite3_finalize(mGetConfigStmt);
-
 	printf("Closing the database\n");
 
 	int closeResult = sqlite3_close(mDb);
@@ -67,45 +65,15 @@ sqlite3_stmt* dst::DataSpot::Prepare(const std::string& query)
 std::string dst::DataSpot::GetConfigValue(const std::string& key)
 {
 	// Prepare the statement once
-	if (mGetConfigStmt == nullptr)
+	printf("Preparing configuration statement\n");
+	if (!mGetConfigStmt.HasStatement())
 	{
-		printf("Preparing configuration statement\n");
 		mGetConfigStmt = Prepare("SELECT value FROM main.config WHERE key = ?;");
 	}
-
-	std::string value; // To return
-
-	// Bind the key
-	int bind_result{ sqlite3_bind_text(
-		mGetConfigStmt,
-		1, // First parameter: key
-		key.c_str(),
-		-1,
-		SQLITE_TRANSIENT) };
-
-	// Check bind result
-	if (bind_result != SQLITE_OK)
-	{
-		throw DataSpotException{ "Could not bind", bind_result };
-	}
-	else // Step!
-	{
-		int step_result{ sqlite3_step(mGetConfigStmt) };
-		// Check step result
-		if (step_result != SQLITE_ROW)
-		{
-			throw DataSpotException{ "Could not step", step_result };
-		}
-		else // Get the value. Woho!
-		{
-			const unsigned char* cValue{ sqlite3_column_text(mGetConfigStmt, 0) };
-			value = std::string(reinterpret_cast<const char*>(cValue));
-			printf("Found config value [%s] for key[%s]\n", value.c_str(), key.c_str());
-		}
-	}
-
-	// Reset the statement for reuse
-	sqlite3_reset(mGetConfigStmt);
+	mGetConfigStmt.Bind(key);
+	mGetConfigStmt.Step();
+	std::string value{ mGetConfigStmt.GetText(0) };
+	mGetConfigStmt.Reset();
 
 	return value;
 }
