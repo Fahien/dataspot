@@ -93,6 +93,12 @@ void dst::Statement::Step() const
 }
 
 
+int dst::Statement::GetInteger(const unsigned column) const
+{
+	return sqlite3_column_int(mStmt, column);
+}
+
+
 std::string dst::Statement::GetText(const unsigned column) const
 {
 	const unsigned char* cValue{ sqlite3_column_text(mStmt, column) };

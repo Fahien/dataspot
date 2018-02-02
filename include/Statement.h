@@ -28,7 +28,8 @@ public:
 
 	void Step() const;
 
-	std::string GetText(const unsigned column) const;
+	int         GetInteger(const unsigned column) const;
+	std::string GetText   (const unsigned column) const;
 
 	// Resets the statement for reuse
 	void Reset() const;
