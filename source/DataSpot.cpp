@@ -45,6 +45,7 @@ dst::Statement& dst::DataSpot::Prepare(const std::string& query)
 	else
 	{
 		pStmt = &pair->second;
+		pStmt->Reset();
 	}
 
 	return *pStmt;
