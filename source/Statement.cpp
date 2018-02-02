@@ -27,10 +27,10 @@ dst::Statement::Statement(dst::Statement&& statement)
 dst::Statement::~Statement()
 {
 	// Delete the statement
-	if (mStmt != nullptr)
+	if (mStmt)
 	{
-		printf("Finalizing stmt");
 		sqlite3_finalize(mStmt);
+		printf("Finilizing statement\n");
 	}
 }
 
@@ -45,7 +45,7 @@ dst::Statement& dst::Statement::operator=(dst::Statement&& other)
 
 void dst::Statement::SetStmt(sqlite3_stmt* stmt)
 {
-	if (mStmt != nullptr)
+	if (mStmt)
 	{
 		// Delete previous statement
 		sqlite3_finalize(mStmt);

@@ -2,9 +2,11 @@
 #define DST_DATASPOT_H_
 
 #include "Statement.h"
+#include "Database.h"
 
 #include <string>
 #include <stdexcept>
+#include <map>
 
 
 
@@ -25,7 +27,7 @@ public:
 	void Open(const std::string& path);
 
 	/// Returns a prepared statement
-	sqlite3_stmt* Prepare(const std::string& query);
+	Statement& Prepare(const std::string& query);
 
 	/// Creates a table
 	void CreateTable(const std::string& query);
@@ -33,12 +35,9 @@ public:
 	std::string GetConfigValue(const std::string& key);
 
 private:
-	void create(const char* path);
-	void createConfigTable();
-	void populateConfigTable();
+	Database  mDb;
 
-	sqlite3* mDb;
-	Statement mGetConfigStmt;
+	std::map<std::string, Statement> mStatements;
 };
 
 
