@@ -26,6 +26,7 @@ public:
 	void Step() const;
 
 	int         GetInteger(const unsigned column) const;
+	double      GetDouble (const unsigned column) const;
 	std::string GetText   (const unsigned column) const;
 
 	// Resets the statement for reuse
