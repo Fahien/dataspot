@@ -67,16 +67,16 @@ void dst::Statement::CheckBind(const int result) const
 
 
 // Binds an integer
-void dst::Statement::Bind(const int value) const
+void dst::Statement::Bind(const int value, const int index) const
 {
-	CheckBind(sqlite3_bind_int(mStmt, 1, value));
+	CheckBind(sqlite3_bind_int(mStmt, index, value));
 }
 
 
 // Binds a string
-void dst::Statement::Bind(const std::string& value) const
+void dst::Statement::Bind(const std::string& value, const int index) const
 {
-	CheckBind(sqlite3_bind_text(mStmt, 1, value.c_str(), -1, SQLITE_TRANSIENT));
+	CheckBind(sqlite3_bind_text(mStmt, index, value.c_str(), -1, SQLITE_TRANSIENT));
 }
 
 

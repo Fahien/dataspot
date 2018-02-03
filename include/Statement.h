@@ -20,11 +20,8 @@ public:
 
 	Statement& operator=(Statement&& other);
 
-	// Binds an int
-	void Bind(const int value) const;
-
-	// Binds a string
-	void Bind(const std::string& value) const;
+	void Bind(const int          value, const int index = 1) const;
+	void Bind(const std::string& value, const int index = 1) const;
 
 	void Step() const;
 
