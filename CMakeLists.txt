@@ -1,4 +1,13 @@
 cmake_minimum_required(VERSION 3.6)
+
+# LogSpoT
+set(LOGSPOT logspot)
+if("${PROJECT_SOURCE_DIR}" STREQUAL "")
+	set(PROJECT_SOURCE_DIR ".")
+endif()
+set(LOGSPOT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/${LOGSPOT}/include)
+set(LOGSPOT_LIBRARIES ${LOGSPOT})
+
 set(DST_TITLE DataSpoT)
 project(${DST_TITLE})
 
@@ -10,9 +19,17 @@ set(DST_VERSION_MAJOR 0)
 set(DST_VERSION_MINOR 1)
 set(DST_NAME dataspot)
 
+# Check LogSpoT
+if(NOT TARGET ${LOGSPOT})
+	add_subdirectory(${PROJECT_SOURCE_DIR}/${LOGSPOT})
+endif()
+
 # Includes
 set(DST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-include_directories(${DST_INCLUDE_DIR})
+include_directories(
+	${DST_INCLUDE_DIR}
+	${LOGSPOT_INCLUDE_DIR}
+)
 
 # Sources
 set(DST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/source)
@@ -26,6 +43,7 @@ source_group(Sources FILES ${SOURCES})
 # Library
 add_library(${DST_NAME} ${SOURCES})
 set_target_properties(${DST_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(${DST_NAME} ${LOGSPOT_LIBRARIES})
 
 # Test
 set(DST_TEST_DIR ${PROJECT_SOURCE_DIR}/test)
@@ -42,6 +60,6 @@ function(make_test TEST_NAME)
 	add_test(${TEST_NAME} ${EXECUTABLE_OUTPUT_PATH}/${TEST_NAME})
 endfunction(make_test)
 
-make_test(simple-test)
+make_test(dst-test)
 
 include(CTest)

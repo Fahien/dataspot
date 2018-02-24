@@ -1,8 +1,11 @@
-#include "Database.h"
+#include <Logger.h>
+
 #include "DataSpotException.h"
+#include "Database.h"
 
 
 namespace dst = dataspot;
+namespace lst = logspot;
 
 
 dst::Database::Database()
@@ -13,14 +16,14 @@ dst::Database::Database()
 dst::Database::Database(const std::string& path)
 :	mDb{ nullptr }
 {
-	printf("Opening a database at %s\n", path.c_str());
+	lst::Logger::log.info("Opening a database at %s\n", path.c_str());
 
 	int openResult{ sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE, nullptr) };
 
 	// If the database file does not exist, log and create it
 	if (openResult != SQLITE_OK)
 	{
-		printf("No database available, creating a default one at %s", path.c_str());
+		lst::Logger::log.info("No database available, creating a default one at %s", path.c_str());
 		create(path);
 	}
 }
@@ -33,13 +36,13 @@ dst::Database::~Database()
 		return;
 	}
 
-	printf("Closing the database\n");
+	lst::Logger::log.info("Closing the database\n");
 
 	int closeResult{ sqlite3_close(mDb) };
 
 	if (closeResult != SQLITE_OK)
 	{
-		printf("Could not close the database [error %d]\n", closeResult);
+		lst::Logger::log.info("Could not close the database [error %d]\n", closeResult);
 	}
 }
 
@@ -49,18 +52,18 @@ void dst::Database::Open(const std::string& path)
 {
 	if (mDb)
 	{
-		printf("Database already opened\n");
+		lst::Logger::log.info("Database already opened\n");
 		return;
 	}
 
-	printf("Opening a database at %s\n", path.c_str());
+	lst::Logger::log.info("Opening a database at %s\n", path.c_str());
 
 	int openResult{ sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE, nullptr) };
 
 	// If the database file does not exist, log and create it
 	if (openResult != SQLITE_OK)
 	{
-		printf("No database available, creating a default one at %s", path.c_str());
+		lst::Logger::log.info("No database available, creating a default one at %s", path.c_str());
 		create(path.c_str());
 	}
 }
@@ -89,7 +92,7 @@ void dst::Database::create(const std::string& path)
 	// If could not create the database, complain
 	if (createResult != SQLITE_OK)
 	{
-		printf("Could not create a default database. Why? WHY? [error %d]", createResult);
+		lst::Logger::log.info("Could not create a default database. Why? WHY? [error %d]", createResult);
 	}
 	else // Populate with some default values
 	{
@@ -107,7 +110,7 @@ void dst::Database::createConfigTable()
 /// Creates a table
 void dst::Database::CreateTable(const std::string& query)
 {
-	printf("Creating a config table");
+	lst::Logger::log.info("Creating a config table");
 	sqlite3_stmt* createTableStmt;
 
 	int prepareResult = sqlite3_prepare_v2(
@@ -144,7 +147,7 @@ void dst::Database::CreateTable(const std::string& query)
 
 void dst::Database::populateConfigTable()
 {
-	printf("Populating the config table");
+	lst::Logger::log.info("Populating the config table");
 	sqlite3_stmt* populateTableStmt;
 
 	int prepareResult = sqlite3_prepare_v2(
@@ -157,7 +160,7 @@ void dst::Database::populateConfigTable()
 	// If could not prepare the statement, log the error code
 	if (prepareResult != SQLITE_OK)
 	{
-		printf("Could not prepare a statement. [error %d]", prepareResult);
+		lst::Logger::log.info("Could not prepare a statement. [error %d]", prepareResult);
 	}
 	else // Populate the table
 	{
@@ -192,7 +195,7 @@ void dst::Database::populateConfigTable()
 			// If could not bind the key, log the error
 			if (bind_result != SQLITE_OK)
 			{
-				printf("Could not bind a parameter [error %d]", bind_result);
+				lst::Logger::log.info("Could not bind a parameter [error %d]", bind_result);
 				continue;
 			}
 
@@ -206,7 +209,7 @@ void dst::Database::populateConfigTable()
 			// If could not bind the value, log the error
 			if (bind_result != SQLITE_OK)
 			{
-				printf("Could not bind a parameter [error %d]", bind_result);
+				lst::Logger::log.info("Could not bind a parameter [error %d]", bind_result);
 				continue;
 			}
 
@@ -216,7 +219,7 @@ void dst::Database::populateConfigTable()
 			// If could not step the statement, log the error
 			if (step_result != SQLITE_DONE)
 			{
-				printf("Could not step the insert statement: %s", sqlite3_errmsg(mDb));
+				lst::Logger::log.info("Could not step the insert statement: %s", sqlite3_errmsg(mDb));
 			}
 
 			// Reset the statement
@@ -225,7 +228,7 @@ void dst::Database::populateConfigTable()
 			// Check reset result
 			if (reset_result != SQLITE_OK)
 			{
-				printf("Could not reset the statement [error %d]", reset_result);
+				lst::Logger::log.info("Could not reset the statement [error %d]", reset_result);
 			}
 		}
 	}

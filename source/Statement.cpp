@@ -30,7 +30,6 @@ dst::Statement::~Statement()
 	if (mStmt)
 	{
 		sqlite3_finalize(mStmt);
-		printf("Finilizing statement\n");
 	}
 }
 

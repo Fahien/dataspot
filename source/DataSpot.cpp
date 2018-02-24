@@ -1,14 +1,12 @@
-#include "DataSpot.h"
+#include <iostream>
 
 #include "Statement.h"
 #include "DataSpotException.h"
 #include "sqlite3.h"
 
-#include <iostream>
-
+#include "DataSpot.h"
 
 #define ENTRIES_COUNT 4
-
 
 namespace dst = dataspot;
 
@@ -39,7 +37,6 @@ dst::Statement& dst::DataSpot::Prepare(const std::string& query)
 	if (pair == mStatements.end())
 	{
 		// Prepare the statement once
-		printf("Preparing configuration statement\n");
 		pStmt = &(mStatements[query] = mDb.Prepare(query));
 	}
 	else
