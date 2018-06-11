@@ -5,26 +5,27 @@
 
 #include <iostream>
 
-namespace dst = dataspot;
+using namespace std;
+using namespace dataspot;
 
 
-dst::Statement::Statement()
+Statement::Statement()
 :	mStmt{ nullptr }
 {}
 
 
-dst::Statement::Statement(sqlite3_stmt* stmt)
+Statement::Statement(sqlite3_stmt* stmt)
 :	mStmt{ stmt }
 {}
 
 
-dst::Statement::Statement(dst::Statement&& statement)
+Statement::Statement(Statement&& statement)
 {
-	*this = std::move(statement);
+	*this = move(statement);
 }
 
 
-dst::Statement::~Statement()
+Statement::~Statement()
 {
 	// Delete the statement
 	if (mStmt)
@@ -34,7 +35,7 @@ dst::Statement::~Statement()
 }
 
 
-dst::Statement& dst::Statement::operator=(dst::Statement&& other)
+Statement& Statement::operator=(Statement&& other)
 {
 	SetStmt(other.mStmt);
 	other.mStmt = nullptr;
@@ -42,7 +43,7 @@ dst::Statement& dst::Statement::operator=(dst::Statement&& other)
 }
 
 
-void dst::Statement::SetStmt(sqlite3_stmt* stmt)
+void Statement::SetStmt(sqlite3_stmt* stmt)
 {
 	if (mStmt)
 	{
@@ -55,7 +56,7 @@ void dst::Statement::SetStmt(sqlite3_stmt* stmt)
 
 
 // Checks a bind result
-void dst::Statement::CheckBind(const int result) const
+void Statement::CheckBind(const int result) const
 {
 	// Check the result
 	if (result != SQLITE_OK)
@@ -66,20 +67,20 @@ void dst::Statement::CheckBind(const int result) const
 
 
 // Binds an integer
-void dst::Statement::Bind(const int value, const int index) const
+void Statement::Bind(const int value, const int index) const
 {
 	CheckBind(sqlite3_bind_int(mStmt, index, value));
 }
 
 
 // Binds a string
-void dst::Statement::Bind(const std::string& value, const int index) const
+void Statement::Bind(const string& value, const int index) const
 {
 	CheckBind(sqlite3_bind_text(mStmt, index, value.c_str(), -1, SQLITE_TRANSIENT));
 }
 
 
-void dst::Statement::Step() const
+void Statement::Step() const
 {
 	// Step
 	int stepResult{ sqlite3_step(mStmt) };
@@ -92,19 +93,19 @@ void dst::Statement::Step() const
 }
 
 
-int dst::Statement::GetInteger(const unsigned column) const
+int Statement::GetInteger(const unsigned column) const
 {
 	return sqlite3_column_int(mStmt, column);
 }
 
 
-double dst::Statement::GetDouble(const unsigned column) const
+double Statement::GetDouble(const unsigned column) const
 {
 	return sqlite3_column_double(mStmt, column);
 }
 
 
-std::string dst::Statement::GetText(const unsigned column) const
+string Statement::GetText(const unsigned column) const
 {
 	const unsigned char* cValue{ sqlite3_column_text(mStmt, column) };
 	return reinterpret_cast<const char*>(cValue);
@@ -112,7 +113,7 @@ std::string dst::Statement::GetText(const unsigned column) const
 
 
 // Resets the statement for reuse
-void dst::Statement::Reset() const
+void Statement::Reset() const
 {
 	sqlite3_reset(mStmt);
 }

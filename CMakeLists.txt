@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
 
-# LogSpoT
-set(LOGSPOT logspot)
-if("${PROJECT_SOURCE_DIR}" STREQUAL "")
-	set(PROJECT_SOURCE_DIR ".")
-endif()
-set(LOGSPOT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/${LOGSPOT}/include)
-set(LOGSPOT_LIBRARIES ${LOGSPOT})
-
 set(DST_TITLE DataSpoT)
 project(${DST_TITLE})
 
@@ -19,6 +11,20 @@ set(DST_VERSION_MAJOR 0)
 set(DST_VERSION_MINOR 1)
 set(DST_NAME dataspot)
 
+# CMake modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
+# SQLite3
+find_package(SQLite3)
+
+# LogSpoT
+set(LOGSPOT logspot)
+if("${PROJECT_SOURCE_DIR}" STREQUAL "")
+	set(PROJECT_SOURCE_DIR ".")
+endif()
+set(LOGSPOT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/${LOGSPOT}/include)
+set(LOGSPOT_LIBRARIES ${LOGSPOT})
+
 # Check LogSpoT
 if(NOT TARGET ${LOGSPOT})
 	add_subdirectory(${PROJECT_SOURCE_DIR}/${LOGSPOT})
@@ -28,22 +34,22 @@ endif()
 set(DST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 include_directories(
 	${DST_INCLUDE_DIR}
+	${SQLITE3_INCLUDE_DIRS}
 	${LOGSPOT_INCLUDE_DIR}
 )
 
 # Sources
-set(DST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/source)
+set(DST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(SOURCES
 	${DST_SOURCE_DIR}/DataSpot.cpp
 	${DST_SOURCE_DIR}/Statement.cpp
-	${DST_SOURCE_DIR}/Database.cpp
-	${DST_SOURCE_DIR}/sqlite3.c)
+	${DST_SOURCE_DIR}/Database.cpp)
 source_group(Sources FILES ${SOURCES})
 
 # Library
 add_library(${DST_NAME} ${SOURCES})
 set_target_properties(${DST_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${DST_NAME} ${LOGSPOT_LIBRARIES})
+target_link_libraries(${DST_NAME} ${SQLITE3_LIBRARIES} ${LOGSPOT_LIBRARIES})
 
 # Test
 set(DST_TEST_DIR ${PROJECT_SOURCE_DIR}/test)

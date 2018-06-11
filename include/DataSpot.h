@@ -35,9 +35,9 @@ public:
 	std::string GetConfigValue(const std::string& key);
 
 private:
-	Database  mDb;
+	Database mDb;
 
-	std::map<std::string, Statement> mStatements;
+	std::map<const std::string, Statement> mStatements;
 };
 
 

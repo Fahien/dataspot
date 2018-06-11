@@ -8,32 +8,33 @@
 
 #define ENTRIES_COUNT 4
 
-namespace dst = dataspot;
+using namespace std;
+using namespace dataspot;
 
 
-dst::DataSpot::DataSpot()
+DataSpot::DataSpot()
 :	mDb        {}
 ,	mStatements{}
 {}
 
 
-dst::DataSpot::~DataSpot()
+DataSpot::~DataSpot()
 {}
 
 
 /// Opens a SQLite database, or create if it does not exist
-void dst::DataSpot::Open(const std::string& path)
+void DataSpot::Open(const string& path)
 {
 	mDb.Open(path);
 }
 
 
 /// Returns a prepared statement
-dst::Statement& dst::DataSpot::Prepare(const std::string& query)
+Statement& DataSpot::Prepare(const string& query)
 {
 	Statement* pStmt{};
 	
-	auto& pair = mStatements.find(query);
+	auto pair = mStatements.find(query);
 	if (pair == mStatements.end())
 	{
 		// Prepare the statement once
@@ -49,16 +50,16 @@ dst::Statement& dst::DataSpot::Prepare(const std::string& query)
 }
 
 
-std::string dst::DataSpot::GetConfigValue(const std::string& key)
+string DataSpot::GetConfigValue(const string& key)
 {
 	
-	std::string query{ "SELECT value FROM main.config WHERE key = ?;" };
+	string query{ "SELECT value FROM main.config WHERE key = ?;" };
 	
 	Statement& getConfigStmt{ Prepare(query) };
 
 	getConfigStmt.Bind(key);
 	getConfigStmt.Step();
-	std::string value{ getConfigStmt.GetText(0) };
+	string value{ getConfigStmt.GetText(0) };
 	getConfigStmt.Reset();
 
 	return value;
@@ -66,7 +67,7 @@ std::string dst::DataSpot::GetConfigValue(const std::string& key)
 
 
 /// Creates a table
-void dst::DataSpot::CreateTable(const std::string& query)
+void DataSpot::CreateTable(const string& query)
 {
 	mDb.CreateTable(query);
 }
