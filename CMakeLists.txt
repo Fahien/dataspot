@@ -1,5 +1,18 @@
 cmake_minimum_required(VERSION 3.6)
 
+# LogSpoT
+set(LOGSPOT logspot)
+if("${PROJECT_SOURCE_DIR}" STREQUAL "")
+	set(PROJECT_SOURCE_DIR ".")
+endif()
+set(LOGSPOT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/${LOGSPOT}/include)
+set(LOGSPOT_LIBRARIES ${LOGSPOT})
+
+# Check LogSpoT
+if(NOT TARGET ${LOGSPOT})
+	add_subdirectory(${PROJECT_SOURCE_DIR}/${LOGSPOT})
+endif()
+
 set(DST_TITLE DataSpoT)
 project(${DST_TITLE})
 
@@ -16,19 +29,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 # SQLite3
 find_package(SQLite3)
-
-# LogSpoT
-set(LOGSPOT logspot)
-if("${PROJECT_SOURCE_DIR}" STREQUAL "")
-	set(PROJECT_SOURCE_DIR ".")
-endif()
-set(LOGSPOT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/${LOGSPOT}/include)
-set(LOGSPOT_LIBRARIES ${LOGSPOT})
-
-# Check LogSpoT
-if(NOT TARGET ${LOGSPOT})
-	add_subdirectory(${PROJECT_SOURCE_DIR}/${LOGSPOT})
-endif()
 
 # Includes
 set(DST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
