@@ -31,12 +31,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 find_package(SQLite3)
 
 # Includes
-set(DST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-include_directories(
-	${DST_INCLUDE_DIR}
+set(DST_INCLUDE_DIRS
+	${PROJECT_SOURCE_DIR}/include
 	${SQLITE3_INCLUDE_DIRS}
-	${LOGSPOT_INCLUDE_DIR}
-)
+	${LOGSPOT_INCLUDE_DIR})
 
 # Sources
 set(DST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
@@ -50,6 +48,7 @@ source_group(Sources FILES ${SOURCES})
 add_library(${DST_NAME} ${SOURCES})
 set_target_properties(${DST_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${DST_NAME} ${SQLITE3_LIBRARIES} ${LOGSPOT_LIBRARIES})
+target_include_directories(${DST_NAME} PUBLIC ${DST_INCLUDE_DIRS})
 
 # Test
 set(DST_TEST_DIR ${PROJECT_SOURCE_DIR}/test)
@@ -61,6 +60,7 @@ function(make_test TEST_NAME)
 
 	# Executable
 	add_executable(${TEST_NAME} ${TEST_SOURCES})
+	target_include_directories(${TEST_NAME} PRIVATE ${DST_INCLUDE_DIRS})
 	set_target_properties(${TEST_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 	target_link_libraries(${TEST_NAME} ${DST_NAME})
 	add_test(${TEST_NAME} ${EXECUTABLE_OUTPUT_PATH}/${TEST_NAME})
