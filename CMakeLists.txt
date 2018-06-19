@@ -47,6 +47,7 @@ source_group(Sources FILES ${SOURCES})
 # Library
 add_library(${DST_NAME} ${SOURCES})
 set_target_properties(${DST_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(${DST_NAME} PUBLIC ${DST_INCLUDE_DIRS})
 target_link_libraries(${DST_NAME} ${SQLITE3_LIBRARIES} ${LOGSPOT_LIBRARIES})
 target_include_directories(${DST_NAME} PUBLIC ${DST_INCLUDE_DIRS})
 
