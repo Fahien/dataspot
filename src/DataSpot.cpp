@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "Statement.h"
 #include "DataSpotException.h"
 #include "sqlite3.h"
@@ -55,7 +53,7 @@ string DataSpot::GetConfigValue(const string& key)
 	
 	string query{ "SELECT value FROM main.config WHERE key = ?;" };
 	
-	Statement& getConfigStmt{ Prepare(query) };
+	Statement& getConfigStmt = Prepare(query);
 
 	getConfigStmt.Bind(key);
 	getConfigStmt.Step();

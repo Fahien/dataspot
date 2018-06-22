@@ -1,10 +1,11 @@
+#include <cassert>
+#include <cstdlib>
+#include <logspot/Logger.h>
+
 #include "DataSpot.h"
 #include "DataSpotException.h"
 
-#include <iostream>
-#include <cassert>
-#include <cstdlib>
-
+namespace lst = logspot;
 namespace dst = dataspot;
 
 
@@ -22,7 +23,7 @@ int main()
 	}
 	catch (const dst::DataSpotException& e)
 	{
-		std::cerr << e.ToString() << std::endl;
+		lst::Logger::log.Error(e.ToString());
 		return EXIT_FAILURE;
 	}
 

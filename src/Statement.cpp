@@ -3,8 +3,6 @@
 #include "DataSpotException.h"
 #include "sqlite3.h"
 
-#include <iostream>
-
 using namespace std;
 using namespace dataspot;
 

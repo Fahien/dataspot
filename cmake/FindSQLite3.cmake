@@ -16,11 +16,26 @@
 # SQLITE3_LIBRARIES    - List of libraries when using sqlite.
 # SQLITE3_FOUND        - True if sqlite found.
 
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
+	set(INCUDE_HINTS
+		${PROJECT_SOURCE_DIR}/sqlite3/include)
+	set(LIB_HINTS
+		${PROJECT_SOURCE_DIR}/sqlite3/lib/${CMAKE_ANDROID_ARCH_ABI})
+else()
+	set(INCLUDE_HINTS
+		/usr/include
+		${PROJECT_SOURCE_DIR}/sqlite3/include)
+	set(LIB_HINTS
+		/usr/lib/x86_64-linux-gnu
+		${PROJECT_SOURCE_DIR}/sqlite3/lib)
+endif()
+
 # Look for the header file.
-find_path(SQLITE3_INCLUDE_DIR HINTS ${PROJECT_SOURCE_DIR}/sqlite3/include NAMES sqlite3.h)
+find_path(SQLITE3_INCLUDE_DIR HINTS ${INCLUDE_HINTS} NAMES sqlite3.h)
 
 # Look for the library.
-find_library(SQLITE3_LIBRARY HINTS ${PROJECT_SOURCE_DIR}/sqlite3/lib NAMES sqlite3)
+find_library(SQLITE3_LIBRARY HINTS ${LIB_HINTS} NAMES sqlite3)
 
 # Handle the QUIETLY and REQUIRED arguments and set SQLITE3_FOUND to TRUE if all listed variables are TRUE.
 include(FindPackageHandleStandardArgs)
