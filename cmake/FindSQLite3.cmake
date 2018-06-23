@@ -17,18 +17,18 @@
 # SQLITE3_FOUND        - True if sqlite found.
 
 
+# Set include and lib hints
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
-	set(INCUDE_HINTS
-		${PROJECT_SOURCE_DIR}/sqlite3/include)
-	set(LIB_HINTS
-		${PROJECT_SOURCE_DIR}/sqlite3/lib/${CMAKE_ANDROID_ARCH_ABI})
+	# It is allowed to use a library elsewhere than specified by the toolchain
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+	set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+
+	set(INCLUDE_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3/include)
+	set(LIB_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3/lib/${CMAKE_ANDROID_ARCH_ABI})
 else()
-	set(INCLUDE_HINTS
-		/usr/include
-		${PROJECT_SOURCE_DIR}/sqlite3/include)
-	set(LIB_HINTS
-		/usr/lib/x86_64-linux-gnu
-		${PROJECT_SOURCE_DIR}/sqlite3/lib)
+	set(INCLUDE_HINTS /usr/include ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3/include)
+	set(LIB_HINTS /usr/lib/x86_64-linux-gnu ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3/lib)
 endif()
 
 # Look for the header file.

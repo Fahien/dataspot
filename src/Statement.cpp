@@ -1,7 +1,7 @@
-#include "Statement.h"
-
-#include "DataSpotException.h"
 #include "sqlite3.h"
+#include "DataSpotException.h"
+
+#include "Statement.h"
 
 using namespace std;
 using namespace dataspot;
