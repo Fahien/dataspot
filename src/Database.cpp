@@ -24,7 +24,7 @@ Database::Database(const string& path)
 	// If the database file does not exist, log and create it
 	if (openResult != SQLITE_OK)
 	{
-	lst::	Logger::log.Info("No database available, creating a default one at %s", path.c_str());
+		lst::Logger::log.Info("No database available, creating a default one at %s", path.c_str());
 		create(path);
 	}
 }
@@ -43,7 +43,7 @@ Database::~Database()
 
 	if (closeResult != SQLITE_OK)
 	{
-	lst::	Logger::log.Info("Could not close the database [error %d]", closeResult);
+		lst::Logger::log.Info("Could not close the database [error %d]", closeResult);
 	}
 }
 
@@ -53,7 +53,7 @@ void Database::Open(const string& path)
 {
 	if (mDb)
 	{
-	lst::	Logger::log.Info("Database already opened");
+		lst::Logger::log.Info("Database already opened");
 		return;
 	}
 
@@ -64,7 +64,7 @@ void Database::Open(const string& path)
 	// If the database file does not exist, log and create it
 	if (openResult != SQLITE_OK)
 	{
-	lst::	Logger::log.Info("No database available, creating a default one at %s", path.c_str());
+		lst::Logger::log.Info("No database available, creating a default one at %s", path.c_str());
 		create(path.c_str());
 	}
 }
@@ -93,7 +93,7 @@ void Database::create(const string& path)
 	// If could not create the database, complain
 	if (createResult != SQLITE_OK)
 	{
-	lst::	Logger::log.Info("Could not create a default database. Why? WHY? [error %d]", createResult);
+		lst::Logger::log.Info("Could not create a default database. Why? WHY? [error %d]", createResult);
 	}
 	else // Populate with some default values
 	{
@@ -161,7 +161,7 @@ void Database::populateConfigTable()
 	// If could not prepare the statement, log the error code
 	if (prepareResult != SQLITE_OK)
 	{
-	lst::	Logger::log.Info("Could not prepare a statement. [error %d]", prepareResult);
+		lst::Logger::log.Info("Could not prepare a statement. [error %d]", prepareResult);
 	}
 	else // Populate the table
 	{
@@ -196,7 +196,7 @@ void Database::populateConfigTable()
 			// If could not bind the key, log the error
 			if (bind_result != SQLITE_OK)
 			{
-	lst::			Logger::log.Info("Could not bind a parameter [error %d]", bind_result);
+				lst::Logger::log.Info("Could not bind a parameter [error %d]", bind_result);
 				continue;
 			}
 
@@ -210,7 +210,7 @@ void Database::populateConfigTable()
 			// If could not bind the value, log the error
 			if (bind_result != SQLITE_OK)
 			{
-	lst::			Logger::log.Info("Could not bind a parameter [error %d]", bind_result);
+				lst::Logger::log.Info("Could not bind a parameter [error %d]", bind_result);
 				continue;
 			}
 
@@ -220,7 +220,7 @@ void Database::populateConfigTable()
 			// If could not step the statement, log the error
 			if (step_result != SQLITE_DONE)
 			{
-	lst::			Logger::log.Info("Could not step the insert statement: %s", sqlite3_errmsg(mDb));
+				lst::Logger::log.Info("Could not step the insert statement: %s", sqlite3_errmsg(mDb));
 			}
 
 			// Reset the statement
@@ -229,7 +229,7 @@ void Database::populateConfigTable()
 			// Check reset result
 			if (reset_result != SQLITE_OK)
 			{
-	lst::			Logger::log.Info("Could not reset the statement [error %d]", reset_result);
+				lst::Logger::log.Info("Could not reset the statement [error %d]", reset_result);
 			}
 		}
 	}
