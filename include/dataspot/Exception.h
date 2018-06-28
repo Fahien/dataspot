@@ -1,5 +1,5 @@
-#ifndef DST_DATASPOTEXCEPTION_H_
-#define DST_DATASPOTEXCEPTION_H_
+#ifndef DST_EXCEPTION_H_
+#define DST_EXCEPTION_H_
 
 #include <string>
 #include <stdexcept>
@@ -9,10 +9,10 @@ namespace dataspot
 {
 
 
-class DataSpotException : public std::runtime_error
+class Exception : public std::runtime_error
 {
 public:
-	DataSpotException(const char* msg, int error)
+	Exception(const char* msg, int error)
 	:	std::runtime_error(msg)
 	,	mError{ error }
 	{}
@@ -33,4 +33,4 @@ private:
 }
 
 
-#endif // DST_DATASPOTEXCEPTION_H_
+#endif // DST_EXCEPTION_H_

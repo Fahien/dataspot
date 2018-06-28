@@ -1,8 +1,8 @@
-#include "Statement.h"
-#include "DataSpotException.h"
-#include "sqlite3.h"
+#include <sqlite3.h>
 
-#include "DataSpot.h"
+#include "dataspot/Statement.h"
+
+#include "dataspot/DataSpot.h"
 
 #define ENTRIES_COUNT 4
 

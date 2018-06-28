@@ -1,7 +1,7 @@
 #include <logspot/Logger.h>
 
-#include "DataSpotException.h"
-#include "Database.h"
+#include "dataspot/Exception.h"
+#include "dataspot/Database.h"
 
 
 using namespace std;
@@ -79,7 +79,7 @@ sqlite3_stmt* Database::Prepare(const string& query)
 
 	if (prepareResult != SQLITE_OK)
 	{
-		throw DataSpotException{ sqlite3_errmsg(mDb), prepareResult };
+		throw Exception{ sqlite3_errmsg(mDb), prepareResult };
 	}
 
 	return statement;
@@ -124,7 +124,7 @@ void Database::CreateTable(const string& query)
 	// If could not prepare the statement, log the error code
 	if (prepareResult != SQLITE_OK)
 	{
-		throw DataSpotException{ "Could not prepare a statement", prepareResult };
+		throw Exception{ "Could not prepare a statement", prepareResult };
 	}
 	else // Step the prepared statement
 	{
@@ -133,7 +133,7 @@ void Database::CreateTable(const string& query)
 		// If could not create the table, log the error code
 		if (stepResult != SQLITE_DONE)
 		{
-			throw DataSpotException{ "Could not step a statement", stepResult };
+			throw Exception{ "Could not step a statement", stepResult };
 		}
 
 		// Populate config table with some entries

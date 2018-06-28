@@ -2,8 +2,7 @@
 #define DST_DATABASE_H_
 
 #include <string>
-
-#include "sqlite3.h"
+#include <sqlite3.h>
 
 
 namespace dataspot

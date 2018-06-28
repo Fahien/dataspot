@@ -1,13 +1,12 @@
 #ifndef DST_DATASPOT_H_
 #define DST_DATASPOT_H_
 
-#include "Statement.h"
-#include "Database.h"
-
 #include <string>
 #include <stdexcept>
 #include <map>
 
+#include "dataspot/Statement.h"
+#include "dataspot/Database.h"
 
 
 struct sqlite3;

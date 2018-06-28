@@ -2,6 +2,12 @@
 #define DST_STATEMENT_H_
 
 #include <string>
+#include <iterator>
+#include <memory>
+#include <cassert>
+#include <sqlite3.h>
+
+
 
 struct sqlite3_stmt;
 
@@ -9,12 +15,32 @@ struct sqlite3_stmt;
 namespace dataspot
 {
 
+class Statement;
+
+class Row
+{
+  public:
+	Row(Statement& stmt);
+
+	void Next();
+
+	template <typename T>
+	T Get(const uint64_t column);
+
+  private:
+	Statement& mStmt;
+};
+
+template <>
+std::string Row::Get<std::string>(const uint64_t column);
+
 
 class Statement
 {
 public:
-	Statement();
-	Statement(sqlite3_stmt* stmt);
+	class Iterator;
+
+	Statement(sqlite3_stmt* stmt = nullptr);
 	Statement(Statement&& statement);
 	~Statement();
 
@@ -23,7 +49,10 @@ public:
 	void Bind(const int          value, const int index = 1) const;
 	void Bind(const std::string& value, const int index = 1) const;
 
-	void Step() const;
+	Iterator begin() const;
+	Iterator end() const;
+
+	int Step() const;
 
 	int         GetInteger(const unsigned column) const;
 	double      GetDouble (const unsigned column) const;
@@ -42,9 +71,28 @@ private:
 	void CheckBind(const int result) const;
 
 	sqlite3_stmt* mStmt;
+	Row mRow;
 
 	friend class DataSpot;
+	friend class Row;
 };
+
+
+class Statement::Iterator
+{
+  public:
+	static Iterator END;
+
+	Iterator(const Statement* stmt = nullptr);
+
+	Iterator operator++();
+	bool operator!=(const Iterator& other) const;
+	const Row& operator*() const { return mStmt->mRow; }
+
+  private:
+	const Statement* mStmt;
+};
+
 
 
 }
