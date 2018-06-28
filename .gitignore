@@ -2,3 +2,5 @@
 build
 *.data
 sqlite*
+*.sh
+*.bat

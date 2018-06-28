@@ -35,7 +35,7 @@ source_group(Sources FILES ${SOURCES})
 # Library
 add_library(${DST_NAME} ${SOURCES})
 target_include_directories(${DST_NAME} PUBLIC ${DST_INCLUDE_DIRS})
-target_link_libraries(${DST_NAME} ${SQLITE3_LIBRARIES} ${LOGSPOT_LIBRARIES})
+target_link_libraries(${DST_NAME} PUBLIC ${SQLITE3_LIBRARIES} ${LOGSPOT_LIBRARIES})
 
 # Test
 set(DST_TEST_DIR ${PROJECT_SOURCE_DIR}/test)
