@@ -13,11 +13,10 @@ namespace dst = dataspot;
 
 int main()
 {
-	dst::DataSpot data;
 
 	try
 	{
-		data.Open("test.data");
+		dst::DataSpot data{ "test.data" };
 		assert(data.GetConfigValue("window.title")  == "Name");
 		assert(data.GetConfigValue("window.width")  == "480" );
 		assert(data.GetConfigValue("window.height") == "270" );

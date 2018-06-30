@@ -10,21 +10,16 @@ using namespace std;
 using namespace dataspot;
 
 
-DataSpot::DataSpot()
+DataSpot::DataSpot(const string& path)
 :	mDb        {}
 ,	mStatements{}
-{}
+{
+	mDb.Open(path);
+}
 
 
 DataSpot::~DataSpot()
 {}
-
-
-/// Opens a SQLite database, or create if it does not exist
-void DataSpot::Open(const string& path)
-{
-	mDb.Open(path);
-}
 
 
 /// Returns a prepared statement
