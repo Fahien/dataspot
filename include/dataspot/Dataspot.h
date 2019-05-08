@@ -1,12 +1,12 @@
 #ifndef DST_DATASPOT_H_
 #define DST_DATASPOT_H_
 
-#include <string>
-#include <stdexcept>
 #include <map>
+#include <stdexcept>
+#include <string>
 
-#include "dataspot/Statement.h"
 #include "dataspot/Database.h"
+#include "dataspot/Statement.h"
 
 
 struct sqlite3;
@@ -14,35 +14,33 @@ struct sqlite3_stmt;
 
 namespace dataspot
 {
-
-
-class DataSpot
+class Dataspot
 {
-public:
+  public:
 	/// Opens a SQLite database, or create if it does not exist
 	/// @param[in] path Path to the database
-	DataSpot(const std::string& path);
-	~DataSpot();
+	Dataspot( const std::string& path );
+	~Dataspot();
 
 	/// @param[in] query Query to prepare
 	/// @return A prepared statement
-	Statement& Prepare(const std::string& query);
+	Statement& prepare( const std::string& query );
 
 	/// Creates a table
 	/// @param[in] query Create query
-	void CreateTable(const std::string& query);
+	void create_table( const std::string& query );
 
 	/// @param[in] key Key to search for
 	/// @return A value from the config table
-	std::string GetConfigValue(const std::string& key);
+	std::string get_config_value( const std::string& key );
 
-private:
-	Database mDb;
+  private:
+	Database db;
 
-	std::map<const std::string, Statement> mStatements;
+	std::map<const std::string, Statement> statements;
 };
 
 
-}
+}  // namespace dataspot
 
-#endif // DST_DATASPOT_H_
+#endif  // DST_DATASPOT_H_

@@ -1,12 +1,11 @@
 #ifndef DST_STATEMENT_H_
 #define DST_STATEMENT_H_
 
-#include <string>
+#include <sqlite3.h>
+#include <cassert>
 #include <iterator>
 #include <memory>
-#include <cassert>
-#include <sqlite3.h>
-
+#include <string>
 
 
 struct sqlite3_stmt;
@@ -14,64 +13,65 @@ struct sqlite3_stmt;
 
 namespace dataspot
 {
-
 class Statement;
 
 class Row
 {
   public:
-	Row(Statement& stmt);
+	Row( Statement& stmt );
 
-	void Next();
+	void next();
 
 	template <typename T>
-	T Get(const uint64_t column);
+	T get( uint64_t column );
 
   private:
-	Statement& mStmt;
+	Statement& stmt;
 };
 
 template <>
-std::string Row::Get<std::string>(const uint64_t column);
+std::string Row::get<std::string>( uint64_t column );
 
 
 class Statement
 {
-public:
+  public:
 	class Iterator;
 
-	Statement(sqlite3_stmt* stmt = nullptr);
-	Statement(Statement&& statement);
+	Statement( sqlite3_stmt* stmt = nullptr );
+	Statement( Statement&& statement );
 	~Statement();
 
-	Statement& operator=(Statement&& other);
+	Statement& operator=( Statement&& other );
 
-	void Bind(const int          value, const int index = 1) const;
-	void Bind(const std::string& value, const int index = 1) const;
+	void bind( int value, int index = 1 ) const;
+	void bind( const std::string& value, int index = 1 ) const;
 
 	Iterator begin() const;
 	Iterator end() const;
 
-	int Step() const;
+	int step() const;
 
-	int         GetInteger(const unsigned column) const;
-	double      GetDouble (const unsigned column) const;
-	std::string GetText   (const unsigned column) const;
+	int         get_integer( unsigned column ) const;
+	double      get_double( unsigned column ) const;
+	std::string get_text( unsigned column ) const;
 
 	// Resets the statement for reuse
-	void Reset() const;
+	void reset() const;
 
-protected:
-	bool HasStatement() const { return mStmt != nullptr; }
+  protected:
+	sqlite3_stmt* get_stmt()
+	{
+		return stmt;
+	}
+	void set_stmt( sqlite3_stmt* stmt );
 
-	sqlite3_stmt* GetStmt() { return mStmt; }
-	void SetStmt(sqlite3_stmt* stmt);
+  private:
+	void CheckBind( const int result ) const;
 
-private:
-	void CheckBind(const int result) const;
+	sqlite3_stmt* stmt = nullptr;
 
-	sqlite3_stmt* mStmt;
-	Row mRow;
+	Row row;
 
 	friend class DataSpot;
 	friend class Row;
@@ -83,19 +83,21 @@ class Statement::Iterator
   public:
 	static Iterator END;
 
-	Iterator(const Statement* stmt = nullptr);
+	Iterator( const Statement* stmt = nullptr );
 
-	Iterator operator++();
-	bool operator!=(const Iterator& other) const;
-	const Row& operator*() const { return mStmt->mRow; }
+	Iterator   operator++();
+	bool       operator!=( const Iterator& other ) const;
+	const Row& operator*() const
+	{
+		return stmt->row;
+	}
 
   private:
-	const Statement* mStmt;
+	const Statement* stmt = nullptr;
 };
 
 
+}  // namespace dataspot
 
-}
 
-
-#endif // DST_STATEMENT_H_
+#endif  // DST_STATEMENT_H_

@@ -27,13 +27,14 @@ set(DST_INCLUDE_DIRS
 # Sources
 set(DST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(SOURCES
-	${DST_SOURCE_DIR}/DataSpot.cpp
+	${DST_SOURCE_DIR}/Dataspot.cpp
 	${DST_SOURCE_DIR}/Statement.cpp
 	${DST_SOURCE_DIR}/Database.cpp)
 source_group(Sources FILES ${SOURCES})
 
 # Library
 add_library(${DST_NAME} ${SOURCES})
+target_compile_features( ${DST_NAME} PRIVATE cxx_std_17 )
 target_include_directories(${DST_NAME} PUBLIC ${DST_INCLUDE_DIRS})
 target_link_libraries(${DST_NAME} PUBLIC ${SQLITE3_LIBRARIES} ${LOGSPOT_LIBRARIES})
 

@@ -8,54 +8,52 @@ using namespace std;
 using namespace dataspot;
 
 
-Statement::Statement(sqlite3_stmt* stmt)
-:	mStmt{ stmt }
-,	mRow{ *this }
-{}
-
-
-Statement::Statement(Statement&& statement)
-: mRow{ move(statement.mRow) }
+Statement::Statement( sqlite3_stmt* s ) : stmt{ s }, row{ *this }
 {
-	*this = move(statement);
+}
+
+
+Statement::Statement( Statement&& statement ) : row{ move( statement.row ) }
+{
+	*this = move( statement );
 }
 
 
 Statement::~Statement()
 {
 	// Delete the statement
-	if (mStmt)
+	if ( stmt )
 	{
-		sqlite3_finalize(mStmt);
+		sqlite3_finalize( stmt );
 	}
 }
 
 
-Statement& Statement::operator=(Statement&& other)
+Statement& Statement::operator=( Statement&& other )
 {
-	SetStmt(other.mStmt);
-	other.mStmt = nullptr;
+	set_stmt( other.stmt );
+	other.stmt = nullptr;
 	return *this;
 }
 
 
-void Statement::SetStmt(sqlite3_stmt* stmt)
+void Statement::set_stmt( sqlite3_stmt* stmt )
 {
-	if (mStmt)
+	if ( stmt )
 	{
 		// Delete previous statement
-		sqlite3_finalize(mStmt);
+		sqlite3_finalize( stmt );
 	}
 
-	mStmt = stmt;
+	stmt = stmt;
 }
 
 
 // Checks a bind result
-void Statement::CheckBind(const int result) const
+void Statement::CheckBind( const int result ) const
 {
 	// Check the result
-	if (result != SQLITE_OK)
+	if ( result != SQLITE_OK )
 	{
 		throw Exception{ "Could not bind", result };
 	}
@@ -63,22 +61,22 @@ void Statement::CheckBind(const int result) const
 
 
 // Binds an integer
-void Statement::Bind(const int value, const int index) const
+void Statement::bind( const int value, const int index ) const
 {
-	CheckBind(sqlite3_bind_int(mStmt, index, value));
+	CheckBind( sqlite3_bind_int( stmt, index, value ) );
 }
 
 
 // Binds a string
-void Statement::Bind(const string& value, const int index) const
+void Statement::bind( const string& value, const int index ) const
 {
-	CheckBind(sqlite3_bind_text(mStmt, index, value.c_str(), -1, SQLITE_TRANSIENT));
+	CheckBind( sqlite3_bind_text( stmt, index, value.c_str(), -1, SQLITE_TRANSIENT ) );
 }
 
 
 Statement::Iterator Statement::begin() const
 {
-	Step();
+	step();
 	return Statement::Iterator{ this };
 }
 
@@ -89,49 +87,49 @@ Statement::Iterator Statement::end() const
 }
 
 
-int Statement::Step() const
+int Statement::step() const
 {
-	return sqlite3_step(mStmt);
+	return sqlite3_step( stmt );
 }
 
 
-int Statement::GetInteger(const unsigned column) const
+int Statement::get_integer( const unsigned column ) const
 {
-	return sqlite3_column_int(mStmt, column);
+	return sqlite3_column_int( stmt, column );
 }
 
 
-double Statement::GetDouble(const unsigned column) const
+double Statement::get_double( const unsigned column ) const
 {
-	return sqlite3_column_double(mStmt, column);
+	return sqlite3_column_double( stmt, column );
 }
 
 
-string Statement::GetText(const unsigned column) const
+string Statement::get_text( const unsigned column ) const
 {
-	const unsigned char* cValue{ sqlite3_column_text(mStmt, column) };
-	return reinterpret_cast<const char*>(cValue);
+	const unsigned char* cValue{ sqlite3_column_text( stmt, column ) };
+	return reinterpret_cast<const char*>( cValue );
 }
 
 
 // Resets the statement for reuse
-void Statement::Reset() const
+void Statement::reset() const
 {
-	sqlite3_reset(mStmt);
+	sqlite3_reset( stmt );
 }
 
 
-Row::Row(Statement& stmt)
-:	mStmt{ stmt }
-{}
-
-
-void Row::Next()
+Row::Row( Statement& stmt ) : stmt{ stmt }
 {
-	int stepResult = mStmt.Step();
-	
+}
+
+
+void Row::next()
+{
+	int stepResult = stmt.step();
+
 	// Check the result
-	if (stepResult != SQLITE_ROW)
+	if ( stepResult != SQLITE_ROW )
 	{
 		throw Exception{ "Could not step", stepResult };
 	}
@@ -139,36 +137,36 @@ void Row::Next()
 
 
 template <>
-std::string Row::Get<std::string>(const uint64_t column)
+std::string Row::get<std::string>( const uint64_t column )
 {
-	assert(column >= 0);
-	const unsigned char* cValue{ sqlite3_column_text(mStmt.GetStmt(), static_cast<int>(column)) };
-	return reinterpret_cast<const char*>(cValue);
+	assert( column >= 0 );
+	const unsigned char* cValue{ sqlite3_column_text( stmt.get_stmt(), static_cast<int>( column ) ) };
+	return reinterpret_cast<const char*>( cValue );
 }
 
 
 Statement::Iterator Statement::Iterator::END{ nullptr };
 
 
-Statement::Iterator::Iterator(const Statement* stmt)
-: mStmt{ stmt }
-{}
-
-
-bool Statement::Iterator::operator!=(const Iterator& other) const
+Statement::Iterator::Iterator( const Statement* stmt ) : stmt{ stmt }
 {
-	return mStmt != other.mStmt;
+}
+
+
+bool Statement::Iterator::operator!=( const Iterator& other ) const
+{
+	return stmt != other.stmt;
 }
 
 
 Statement::Iterator Statement::Iterator::operator++()
 {
-	auto stepResult = mStmt->Step();
-	
+	auto stepResult = stmt->step();
+
 	// Check the result
-	if (stepResult != SQLITE_ROW)
+	if ( stepResult != SQLITE_ROW )
 	{
-		mStmt = nullptr;
+		stmt = nullptr;
 	}
 
 	return *this;

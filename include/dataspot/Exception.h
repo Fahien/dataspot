@@ -1,36 +1,36 @@
 #ifndef DST_EXCEPTION_H_
 #define DST_EXCEPTION_H_
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 
 namespace dataspot
 {
-
-
 class Exception : public std::runtime_error
 {
-public:
-	Exception(const char* msg, int error)
-	:	std::runtime_error(msg)
-	,	mError{ error }
-	{}
+  public:
+	Exception( const char* msg, int err ) : std::runtime_error( msg ), error{ err }
+	{
+	}
 
 	/// Returns the SQLite error code
-	int GetError() const { return mError; }
+	int get_error() const
+	{
+		return error;
+	}
 
 	/// Returns a string representation
-	std::string ToString() const
+	std::string to_string() const
 	{
 		return what();
 	}
 
-private:
-	int mError;
+  private:
+	int error;
 };
 
-}
+}  // namespace dataspot
 
 
-#endif // DST_EXCEPTION_H_
+#endif  // DST_EXCEPTION_H_

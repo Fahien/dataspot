@@ -1,40 +1,35 @@
 #ifndef DST_DATABASE_H_
 #define DST_DATABASE_H_
 
-#include <string>
 #include <sqlite3.h>
-
+#include <string>
 
 namespace dataspot
 {
-
-
 class Database
 {
-public:
-	Database();
-	Database(const std::string& path);
+  public:
+	Database() = default;
+	Database( const std::string& path );
 	~Database();
 
 	/// Opens a SQLite database, or create if it does not exist
-	void Open(const std::string& path);
+	void open( const std::string& path );
 
-	/// Returns a prepared statement
-	sqlite3_stmt* Prepare(const std::string& query);
+	/// @return A prepared statement
+	sqlite3_stmt* prepare( const std::string& query );
 
 	/// Creates a table
-	void CreateTable(const std::string& query);
+	void create_table( const std::string& query );
 
-private:
-	void create(const std::string& path);
-	void createConfigTable();
-	void populateConfigTable();
+  private:
+	void create( const std::string& path );
+	void create_config_table();
+	void populate_config_table();
 
-	sqlite3* mDb;
+	sqlite3* db = nullptr;
 };
 
+}  // namespace dataspot
 
-}
-
-
-#endif // DST_DATABASE_H_
+#endif  // DST_DATABASE_H_
