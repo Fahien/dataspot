@@ -19,10 +19,10 @@ Database::Database(const string& path)
 {
 	lst::Logger::log.Info("Opening a database at %s", path.c_str());
 
-	int openResult{ sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE, nullptr) };
+	int open_result{ sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE, nullptr) };
 
 	// If the database file does not exist, log and create it
-	if (openResult != SQLITE_OK)
+	if (open_result != SQLITE_OK)
 	{
 		lst::Logger::log.Info("No database available, creating a default one at %s", path.c_str());
 		create(path);
@@ -39,11 +39,12 @@ Database::~Database()
 
 	lst::Logger::log.Info("Closing the database");
 
-	int closeResult{ sqlite3_close(mDb) };
+	int result{ sqlite3_close(mDb) };
 
-	if (closeResult != SQLITE_OK)
+	if (result != SQLITE_OK)
 	{
-		lst::Logger::log.Info("Could not close the database [error %d]", closeResult);
+		auto message = sqlite3_errstr(result);
+		lst::Logger::log.Error("Could not close the database: ", message);
 	}
 }
 
@@ -59,12 +60,14 @@ void Database::Open(const string& path)
 
 	lst::Logger::log.Info("Opening a database at %s", path.c_str());
 
-	int openResult{ sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE, nullptr) };
+	int open_result{ sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE, nullptr) };
 
 	// If the database file does not exist, log and create it
-	if (openResult != SQLITE_OK)
+	if (open_result != SQLITE_OK)
 	{
-		lst::Logger::log.Info("No database available, creating a default one at %s", path.c_str());
+		auto message = sqlite3_errstr(open_result);
+		lst::Logger::log.Info("Cannot open database: %s", message);
+		lst::Logger::log.Info("Creating temporary database %s", path.c_str());
 		create(path.c_str());
 	}
 }
@@ -88,12 +91,13 @@ sqlite3_stmt* Database::Prepare(const string& query)
 
 void Database::create(const string& path)
 {
-	int createResult{ sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr) };
+	auto create_result = sqlite3_open_v2(path.c_str(), &mDb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 
 	// If could not create the database, complain
-	if (createResult != SQLITE_OK)
+	if (create_result != SQLITE_OK)
 	{
-		lst::Logger::log.Info("Could not create a default database. Why? WHY? [error %d]", createResult);
+		auto message = sqlite3_errstr(create_result);
+		lst::Logger::log.Error("Could not create a default database: %s", message);
 	}
 	else // Populate with some default values
 	{
