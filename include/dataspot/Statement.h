@@ -56,7 +56,7 @@ class Statement
 	double      get_double( unsigned column ) const;
 	std::string get_text( unsigned column ) const;
 
-	// Resets the statement for reuse
+	/// Resets the statement for reuse
 	void reset() const;
 
   protected:
@@ -67,7 +67,7 @@ class Statement
 	void set_stmt( sqlite3_stmt* stmt );
 
   private:
-	void CheckBind( const int result ) const;
+	void check_bind( int result ) const;
 
 	sqlite3_stmt* stmt = nullptr;
 
@@ -81,7 +81,7 @@ class Statement
 class Statement::Iterator
 {
   public:
-	static Iterator END;
+	static Iterator End;
 
 	Iterator( const Statement* stmt = nullptr );
 

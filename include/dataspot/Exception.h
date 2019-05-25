@@ -4,30 +4,25 @@
 #include <stdexcept>
 #include <string>
 
+#include <sqlite3.h>
 
 namespace dataspot
 {
 class Exception : public std::runtime_error
 {
   public:
-	Exception( const char* msg, int err ) : std::runtime_error( msg ), error{ err }
+	Exception( const char* msg, int err ) : std::runtime_error( msg ), message{ sqlite3_errstr( err ) }
 	{
 	}
 
-	/// Returns the SQLite error code
-	int get_error() const
-	{
-		return error;
-	}
-
-	/// Returns a string representation
+	/// @return A string representation of the error
 	std::string to_string() const
 	{
-		return what();
+		return what() + std::string{ ": " } + message;
 	}
 
   private:
-	int error;
+	const std::string message;
 };
 
 }  // namespace dataspot
