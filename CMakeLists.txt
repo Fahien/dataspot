@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
 set(CMAKE_C_STANDARD   11)
-set(CMAKE_CXX_STANDARD 11)
 
 set(DST_TITLE DataSpot)
 project(${DST_TITLE})
@@ -27,7 +26,6 @@ set(DST_INCLUDE_DIRS
 # Sources
 set(DST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(SOURCES
-	${DST_SOURCE_DIR}/Dataspot.cpp
 	${DST_SOURCE_DIR}/Statement.cpp
 	${DST_SOURCE_DIR}/Database.cpp)
 source_group(Sources FILES ${SOURCES})

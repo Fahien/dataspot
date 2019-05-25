@@ -52,9 +52,9 @@ class Statement
 
 	int step() const;
 
-	int         get_integer( unsigned column ) const;
-	double      get_double( unsigned column ) const;
-	std::string get_text( unsigned column ) const;
+	int         get_integer( unsigned column = 0 ) const;
+	double      get_double( unsigned column = 0 ) const;
+	std::string get_text( unsigned column = 0 ) const;
 
 	/// Resets the statement for reuse
 	void reset() const;
